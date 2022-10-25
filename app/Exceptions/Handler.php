@@ -47,4 +47,68 @@ class Handler extends ExceptionHandler
             //
         });
     }
+
+    public function render($request, Throwable $e)
+    {
+        // is this request asks for json?
+        if( $request->header('Content-Type') == 'application/json' ){
+
+            // is this exception?
+            if ( !empty($e) ) {
+
+                // set default error message
+                $response = [
+                    'error' => 'Sorry, can not execute your request.'
+                ];
+
+                // If debug mode is enabled
+                if (config('app.debug')) {
+                    // Add the exception class name, message and stack trace to response
+                    $response['exception'] = get_class($e); // Reflection might be better here
+                    $response['message'] = $e->getMessage();
+                    $response['trace'] = $e->getTrace();
+                }
+
+                // get correct status code
+                // is this validation exception
+                if($e instanceof ValidationException){
+
+                    return $this->convertValidationExceptionToResponse($e, $request);
+
+                    // is it authentication exception
+                }else if($e instanceof AuthenticationException){
+
+                    $status = 401;
+
+                    $response['error'] = 'Can not finish authentication!';
+
+                    //is it DB exception
+                }else if($e instanceof \PDOException){
+
+                    $status = 500;
+
+                    $response['error'] = 'Can not finish your query request!';
+
+                    // is it http exception (this can give us status code)
+                }else if($this->isHttpException($e)){
+
+                    $status = $e->getStatusCode();
+
+                    $response['error'] = 'Request error!';
+
+                }else{
+
+                    // for all others check do we have method getStatusCode and try to get it
+                    // otherwise, set the status to 400
+                    $status = method_exists($e, 'getStatusCode') ? $e->getStatusCode() : 400;
+
+                }
+
+                return response()->json($response,$status);
+
+            }
+        }
+
+        return parent::render($request, $e);
+    }
 }

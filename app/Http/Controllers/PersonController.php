@@ -40,7 +40,7 @@ class PersonController extends Controller
      */
     public function show(Request $request): JsonResponse
     {
-        $person = Person::find($request->get('id'));
+        $person = Person::findOrFail($request->get('id'));
         return new JsonResponse(['success' => $person]);
     }
 

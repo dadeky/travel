@@ -3,6 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Person;
+use App\Services\Person\CreatePersonRequest;
+use App\Services\Person\CreatePersonService;
+use App\Services\Person\TogglePersonActivationRequest;
+use App\Services\Person\TogglePersonActivationService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -23,12 +27,9 @@ class PersonController extends Controller
      * @param Request $request
      * @return JsonResponse
      */
-    public function store(Request $request): JsonResponse
+    public function store(Request $request, CreatePersonService $service): JsonResponse
     {
-        Person::create([
-            'firstName' => $request->get('firstName'),
-            'lastName' => $request->get('lastName')
-        ]);
+        $service->execute(new CreatePersonRequest($request->get('firstName'), $request->get('lastName')));
         return new JsonResponse(['success' => 'Person stored successfully.']);
     }
 
@@ -68,14 +69,13 @@ class PersonController extends Controller
         return new JsonResponse(['success' => 'Person deleted.']);
     }
 
-    /**
-     * Activate a Person
-     * @param Request $request
-     * @return JsonResponse
-     */
-    public function activate(Request $request): JsonResponse
+    public function togglePersonActivation(Request $request, TogglePersonActivationService $service): JsonResponse
     {
-        Person::find($request->get('id'))->activate();
-        return new JsonResponse(['success' => 'Person activated.']);
+        $service->execute(
+            new TogglePersonActivationRequest(
+                $request->get('id'),
+                $request->get('shouldBeActivated') == 1
+            ));
+        return new JsonResponse(['success' => 'Person activation toggled.']);
     }
 }

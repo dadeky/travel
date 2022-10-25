@@ -20,7 +20,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 Route::post('/person', [PersonController::class, 'store']);
 Route::get('/people', [PersonController::class, 'index']);
-Route::put('/person/activate', [PersonController::class, 'activate']);
+Route::put('/person/toggle-person-activation', [PersonController::class, 'togglePersonActivation']);
 Route::delete('/person', [PersonController::class, 'destroy']);
 Route::get('/person', [PersonController::class, 'show']);
 Route::put('/person', [PersonController::class, 'update']);

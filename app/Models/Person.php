@@ -22,4 +22,10 @@ class Person extends Model
         $this->setAttribute('active', true);
         $this->save();
     }
+
+    public function deactivate(): void
+    {
+        $this->setAttribute('active', false);
+        $this->save();
+    }
 }

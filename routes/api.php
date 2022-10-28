@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\PersonController;
+use App\Http\Controllers\WalletController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -24,3 +25,7 @@ Route::put('/person/toggle-person-activation', [PersonController::class, 'toggle
 Route::delete('/person', [PersonController::class, 'destroy']);
 Route::get('/person', [PersonController::class, 'show']);
 Route::put('/person', [PersonController::class, 'update']);
+Route::get('/person/wallets', [PersonController::class, 'getWallets']);
+Route::post('/person/add-wallet', [PersonController::class, 'addWallet']);
+
+Route::put('/wallet/change-name', [WalletController::class, 'changeName']);

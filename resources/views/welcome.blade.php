@@ -128,6 +128,6 @@
                 </div>
             </div>
         </div>
-        <div><?php xdebug_info(); ?></div>
+        <div><?php phpinfo(); ?></div>
     </body>
 </html>

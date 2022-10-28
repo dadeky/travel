@@ -2,11 +2,17 @@
 
 namespace App\Http\Controllers;
 
+use App\Exceptions\Person\PersonIsNotActiveException;
 use App\Models\Person;
+use App\Services\Person\AddWalletRequest;
+use App\Services\Person\AddWalletService;
 use App\Services\Person\CreatePersonRequest;
 use App\Services\Person\CreatePersonService;
+use App\Services\Person\DisplayWalletsRequest;
+use App\Services\Person\DisplayWalletsService;
 use App\Services\Person\TogglePersonActivationRequest;
 use App\Services\Person\TogglePersonActivationService;
+use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -69,6 +75,11 @@ class PersonController extends Controller
         return new JsonResponse(['success' => 'Person deleted.']);
     }
 
+    /**
+     * @param Request $request
+     * @param TogglePersonActivationService $service
+     * @return JsonResponse
+     */
     public function togglePersonActivation(Request $request, TogglePersonActivationService $service): JsonResponse
     {
         $service->execute(
@@ -77,5 +88,26 @@ class PersonController extends Controller
                 $request->get('shouldBeActivated') == 1
             ));
         return new JsonResponse(['success' => 'Person activation toggled.']);
+    }
+
+    /**
+     * @param Request $request
+     * @param DisplayWalletsService $service
+     * @return JsonResponse
+     * @throws Exception
+     */
+    public function getWallets(Request $request, DisplayWalletsService $service)
+    {
+        $wallets = $service->execute(new DisplayWalletsRequest($request->get('id')));
+        return new JsonResponse(['wallets' => $wallets]);
+    }
+
+    /**
+     * @throws PersonIsNotActiveException
+     */
+    public function addWallet(Request $request, AddWalletService $service): JsonResponse
+    {
+        $service->execute(new AddWalletRequest($request->get('id')));
+        return new JsonResponse(['success' => 'Wallet added to person.']);
     }
 }

@@ -2,6 +2,10 @@
 
 namespace App\Providers;
 
+use App\Events\PersonCreated;
+use App\Events\PodcastProcessed;
+use App\Listeners\SendPersonCreatedNotification;
+use App\Listeners\SendPodcastNotification;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
@@ -17,6 +21,12 @@ class EventServiceProvider extends ServiceProvider
     protected $listen = [
         Registered::class => [
             SendEmailVerificationNotification::class,
+        ],
+        PodcastProcessed::class => [
+            SendPodcastNotification::class,
+        ],
+        PersonCreated::class => [
+            SendPersonCreatedNotification::class,
         ],
     ];
 
